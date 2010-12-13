@@ -1,0 +1,20 @@
+<lift:surround with="default" at="content">
+		<h2>Welcome to your project!</h2>
+		<p>
+		<lift:snippet type="Mosaique:form" form="post" multipart="true">
+		<table>
+		<tr><td>Name:</td><td>
+		  <mosaique:name/>
+		</td></tr><tr><td>Size:</td><td>
+		  <mosaique:width size="5"/> X 
+		  <mosaique:height size="5"/>
+		</td></tr><tr><td>Source file</td><td>
+		  <mosaique:sourceFile/>
+		</td></tr></table>
+		  <input type="Submit"/>
+		  <br />
+		  <mosaique:renderMosaique/>
+		</lift:snippet>
+    </p>
+</lift:surround>
+
