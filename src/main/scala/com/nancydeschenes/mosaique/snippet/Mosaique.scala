@@ -29,6 +29,7 @@ class Mosaique extends StatefulSnippet {
 
   var image: BufferedImage = null;
   var scaled: BufferedImage = null;
+  var uniqueMarker = 0;
   def dispatch = {
     case "form" => form _
   }
@@ -60,7 +61,7 @@ class Mosaique extends StatefulSnippet {
     }
 
     <lift:children>
-      <div>Your mosaique here:{ name } is { width }X{ height }</div>
+      <div>Your mosaique here:{ name }is{ width }X{ height }</div>
       <span class="table">
         { rows.map(doLine(_)) }
       </span>
@@ -81,11 +82,13 @@ class Mosaique extends StatefulSnippet {
   }
 
   def doCell(color: Color): NodeSeq = {
+	  import _root_.scala.compat.Platform
     val red = color.getRed;
     val green = color.getGreen;
     val blue = color.getBlue;
-    val imgUrl = "/image/" + red + "/" + green + "/" + blue
-    <img src={imgUrl} />
+    uniqueMarker += 1;
+    val imgUrl = "/image/" + red + "/" + green + "/" + blue + "/" +  uniqueMarker;
+    <img src={ imgUrl }/>
   }
 
   def setWidth(s: String) = {
@@ -125,13 +128,12 @@ object Mosaique {
     b match {
       case Full(data: Map[String, Any]) => {
         data.get("result") match {
-          case Some(results: List[Map[String, Any]]) => {
-            val filepath = results(0)("filepath");
+          case Some(results: List[Map[String, String]]) => {
+		    val filesAndScores : List[(String, Double)] =
+		    	results.map((x) => (x.get("filepath").get, x.get("score").get.toDouble))
+            val filepath = pickOne(filesAndScores);
             val imgUrl = "http://piximilar-flickr.hackmtl.tineye.com/collection/?filepath=" + filepath + "&size=20"
             S.redirectTo(imgUrl);
-          }
-          case Some(results: Map[String, Any]) => {
-            Failure("Invalid JSON submitted: \"%s\"".format(contentString))
           }
           case None => {
             Failure("Invalid JSON submitted: \"%s\"".format(contentString))
@@ -145,5 +147,28 @@ object Mosaique {
         }
         Failure("Invalid JSON submitted: \"%s\"".format(contentString))
     }
+  }
+
+  def pickOne(options: List[(String, Double)]): String = {
+    // add up the scores.
+    var sum : Double = 0;
+    val distributions = options.map((option) => {
+    	sum += option._2;
+    	(option._1, sum)
+    	
+    })
+    println("sum = " + sum);
+    
+    var x = 0;
+    import scala.util.Random;
+    val rand = Random.nextDouble * sum;
+    // linear search
+    distributions foreach { dist =>
+      if (dist._2 > rand) {
+    	  println("returning the " + x + "th result")
+    	  return dist._1
+      }
+    }
+    "bad math";
   }
 }
