@@ -47,16 +47,20 @@ class Mosaique extends StatefulSnippet {
     if (image == null) {
       return <span>Upload a file first</span>
     }
-    val scaled = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+    // Each tile is based on a 2x2 sample
+    val scaled = new BufferedImage(width * 2, height * 2, BufferedImage.TYPE_INT_RGB)
     val g = scaled.createGraphics;
     g.setComposite(AlphaComposite.Src)
-    g.drawImage(image, 0, 0, width, height, null)
-    val rows = new Array[Array[Color]](height);
+    g.drawImage(image, 0, 0, width * 2, height * 2, null)
+    val rows = new Array[Array[Tuple4[Color, Color, Color, Color]]](height);
 
     for (i <- 0 to height - 1) {
-      rows(i) = new Array[Color](width)
+      rows(i) = new Array[Tuple4[Color, Color, Color, Color]](width)
       for (j <- 0 to width - 1) {
-        rows(i)(j) = getColor(scaled, j, i)
+        rows(i)(j) = (getColor(scaled, j * 2, i * 2),
+          getColor(scaled, j * 2, i * 2),
+          getColor(scaled, j * 2, i * 2),
+          getColor(scaled, j * 2, i * 2))
       }
     }
 
@@ -68,7 +72,12 @@ class Mosaique extends StatefulSnippet {
     </lift:children>
   }
 
-  def doLine(cols: Array[Color]): NodeSeq = {
+  def getColor(img: BufferedImage, col: Int, row: Int): Color = {
+    val color = img.getRGB(col, row);
+    return new Color(color);
+  }
+
+  def doLine(cols: Array[Tuple4[Color, Color, Color, Color]]): NodeSeq = {
     <lift:children>
       <div style="height:20px">
         { cols.map(doCell(_)) }
@@ -76,19 +85,20 @@ class Mosaique extends StatefulSnippet {
     </lift:children>
   }
 
-  def getColor(img: BufferedImage, col: Int, row: Int): Color = {
-    val color = img.getRGB(col, row);
-    return new Color(color);
+  def doCell(colors: Tuple4[Color, Color, Color, Color]): NodeSeq = {
+    import _root_.scala.compat.Platform
+
+    uniqueMarker += 1;
+    val imgUrl = "/image/" + colors.productIterator.map(c => colorToString(c)).mkString("/");
+    <img src={ imgUrl + "/" + uniqueMarker }/>
   }
 
-  def doCell(color: Color): NodeSeq = {
-	  import _root_.scala.compat.Platform
-    val red = color.getRed;
-    val green = color.getGreen;
-    val blue = color.getBlue;
-    uniqueMarker += 1;
-    val imgUrl = "/image/" + red + "/" + green + "/" + blue + "/" +  uniqueMarker;
-    <img src={ imgUrl }/>
+  def colorToString(colorIHope: Any): String = {
+    colorIHope match {
+      case c: Color => {
+        (c.getRed, c.getGreen, c.getBlue).productIterator.mkString(",");
+      }
+    }
   }
 
   def setWidth(s: String) = {
@@ -113,12 +123,25 @@ class Mosaique extends StatefulSnippet {
 object Mosaique {
   val baseURL = "http://piximilar-flickr.hackmtl.tineye.com/rest/?method=color_search"
 
-  def picture(red: Any, green: Any, blue: Any): Box[LiftResponse] = {
-    println("Red: " + red)
-    println("Green: " + green)
-    println("Blue: " + blue)
-    val rgb = red + "," + green + "," + blue
-    val apiCall = baseURL + "&colors[0]=" + rgb + "&weights[0]=1";
+  def picture(colors: Tuple4[String, String, String, String]): Box[LiftResponse] = {
+
+    var colorWeights: Map[String, Int] = Map()
+    colors.productIterator.foreach { c =>
+      c match {
+        case color: String => {
+          val x = colorWeights.getOrElse(color, 0);
+          colorWeights += (color -> (x + 1))
+        }
+      }
+    }
+
+    var apiCall = baseURL; // + "&colors[0]=" + rgb + "&weights[0]=1";
+    var idx = 0;
+    colorWeights.foreach(color => {
+      apiCall += "&colors[" + idx + "]=" + color._1 + "&weights[" + idx + "]=" + (color._2 * 0.25)
+      idx += 1;
+    })
+
     val url = new URL(apiCall);
     import net.liftweb.util.JSONParser
     import net.liftweb.util.IoHelpers;
@@ -129,8 +152,8 @@ object Mosaique {
       case Full(data: Map[String, Any]) => {
         data.get("result") match {
           case Some(results: List[Map[String, String]]) => {
-		    val filesAndScores : List[(String, Double)] =
-		    	results.map((x) => (x.get("filepath").get, x.get("score").get.toDouble))
+            val filesAndScores: List[(String, Double)] =
+              results.map((x) => (x.get("filepath").get, x.get("score").get.toDouble))
             val filepath = pickOne(filesAndScores);
             val imgUrl = "http://piximilar-flickr.hackmtl.tineye.com/collection/?filepath=" + filepath + "&size=20"
             S.redirectTo(imgUrl);
@@ -151,22 +174,23 @@ object Mosaique {
 
   def pickOne(options: List[(String, Double)]): String = {
     // add up the scores.
-    var sum : Double = 0;
+    var sum: Double = 0;
     val distributions = options.map((option) => {
-    	sum += option._2;
-    	(option._1, sum)
-    	
+      sum += option._2;
+      (option._1, sum)
+
     })
     println("sum = " + sum);
-    
+
     var x = 0;
     import scala.util.Random;
     val rand = Random.nextDouble * sum;
     // linear search
     distributions foreach { dist =>
+      x += 1;
       if (dist._2 > rand) {
-    	  println("returning the " + x + "th result")
-    	  return dist._1
+        println("returning the " + x + "th result")
+        return dist._1
       }
     }
     "bad math";

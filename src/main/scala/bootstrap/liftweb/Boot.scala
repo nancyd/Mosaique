@@ -22,8 +22,8 @@ class Boot {
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
     LiftRules.dispatch.append {
-      case Req(List("image", red, green, blue, rand), _, _) =>
-        () => Mosaique.picture(red, green, blue)
+      case Req(List("image", color1, color2, color3, color4, ignored), _, _) =>
+        () => Mosaique.picture((color1, color2, color3, color4))
     }
   }
 }
