@@ -58,9 +58,9 @@ class Mosaique extends StatefulSnippet {
       rows(i) = new Array[Tuple4[Color, Color, Color, Color]](width)
       for (j <- 0 to width - 1) {
         rows(i)(j) = (getColor(scaled, j * 2, i * 2),
-          getColor(scaled, j * 2, i * 2),
-          getColor(scaled, j * 2, i * 2),
-          getColor(scaled, j * 2, i * 2))
+          getColor(scaled, j * 2 + 1, i * 2),
+          getColor(scaled, j * 2, i * 2 + 1),
+          getColor(scaled, j * 2 + 1, i * 2 + 1))
       }
     }
 
