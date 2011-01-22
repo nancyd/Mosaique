@@ -13,13 +13,22 @@ import common._
 import util._
 import Helpers._
 
-import java.awt.image.BufferedImage
+//import java.awt.image.BufferedImage
 import java.awt.Color;
-import java.awt.AlphaComposite
-import javax.imageio.ImageIO
+//import java.awt.AlphaComposite
+//import javax.imageio.ImageIO
+
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.Transform;
+
 import java.net.URL
 
+
 class Mosaique extends StatefulSnippet {
+
+  val imageService = ImagesServiceFactory.getImagesService();
 
   //  var mr: MosaiqueRequest;
   var width: Int = 1;
@@ -27,8 +36,8 @@ class Mosaique extends StatefulSnippet {
   var name: String = "NOT PROVIDED";
   var sourceFile: Box[FileParamHolder] = null
 
-  var image: BufferedImage = null;
-  var scaled: BufferedImage = null;
+  var image: Image = null;
+  var scaled: Image = null;
   var uniqueMarker = 0;
   def dispatch = {
     case "form" => form _
@@ -47,11 +56,10 @@ class Mosaique extends StatefulSnippet {
     if (image == null) {
       return <span>Upload a file first</span>
     }
+    
     // Each tile is based on a 2x2 sample
-    val scaled = new BufferedImage(width * 2, height * 2, BufferedImage.TYPE_INT_RGB)
-    val g = scaled.createGraphics;
-    g.setComposite(AlphaComposite.Src)
-    g.drawImage(image, 0, 0, width * 2, height * 2, null)
+    val scaleTransform = ImagesServiceFactory.makeResize(width *2, height * 2)
+    val scaled = imageService.applyTransform(scaleTransform, image)
     val rows = new Array[Array[Tuple4[Color, Color, Color, Color]]](height);
 
     for (i <- 0 to height - 1) {
@@ -72,7 +80,7 @@ class Mosaique extends StatefulSnippet {
     </lift:children>
   }
 
-  def getColor(img: BufferedImage, col: Int, row: Int): Color = {
+  def getColor(img: Image, col: Int, row: Int): Color = {
     val color = img.getRGB(col, row);
     return new Color(color);
   }
@@ -113,7 +121,8 @@ class Mosaique extends StatefulSnippet {
 
   def setSourceFile(s: FileParamHolder) {
     println("Source file: " + s);
-    image = ImageIO.read(s.fileStream);
+    
+    image = ImagesServiceFactory.makeImage(s.file)
     var w = image.getWidth
     var h = image.getHeight
     println(w + " x " + h + " : " + image)
@@ -138,7 +147,7 @@ object Mosaique {
     var apiCall = baseURL; // + "&colors[0]=" + rgb + "&weights[0]=1";
     var idx = 0;
     colorWeights.foreach(color => {
-      apiCall += "&colors[" + idx + "]=" + color._1 + "&weights[" + idx + "]=" + (color._2 * 0.25)
+      apiCall += "&colors%5B" + idx + "%5D=" + color._1 + "&weights%5B" + idx + "%5D=" + (color._2 * 0.25)
       idx += 1;
     })
 
