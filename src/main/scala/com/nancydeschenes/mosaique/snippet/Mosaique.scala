@@ -26,6 +26,8 @@ class Mosaique extends StatefulSnippet {
   var height: Int = 1;
   var name: String = "NOT PROVIDED";
   var sourceFile: Box[FileParamHolder] = null
+  var sampleSize =  "1"
+  val sampleSizes = List("1", "4")
 
   var image: BufferedImage = null;
   var scaled: BufferedImage = null;
@@ -33,9 +35,11 @@ class Mosaique extends StatefulSnippet {
   def dispatch = {
     case "form" => form _
   }
-
+  
+  
   def form(xhtml: NodeSeq): NodeSeq = {
     bind("mosaique", xhtml, // namespace
+      "sampleSize" -> SHtml.radio(sampleSizes, Empty, sampleSize=_).toForm,
       "name" -> SHtml.text(name, name = _),
       "width" -> SHtml.text(width.toString(), v => setWidth(v)),
       "height" -> SHtml.text(height.toString(), v => setHeight(v)),
@@ -47,37 +51,101 @@ class Mosaique extends StatefulSnippet {
     if (image == null) {
       return <span>Upload a file first</span>
     }
-    // Each tile is based on a 2x2 sample
+    val images : Array[Array[String]] = sampleSize match {
+//    	case "9" => getImageUrls9
+    	case "4" => getImageUrls4
+    	case _ => getImageUrls1
+    }
+    <lift:children>
+      <div>Your mosaique here:{ name }is{ width }X{ height }</div>
+      <span class="table">
+        { 
+        	images.map(doLine(_)) 
+        }
+      </span>
+    </lift:children>
+  }
+  
+  
+  def getImageUrls1 : Array[Array[String]] = {
+    val scaled = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+    val g = scaled.createGraphics;
+    g.setComposite(AlphaComposite.Src)
+    g.drawImage(image, 0, 0, width, height, null)
+    val rows = new Array[Array[String]](height);
+
+    for (i <- 0 to height - 1) {
+      rows(i) = new Array[String](width)
+      for (j <- 0 to width - 1) {
+        val color = getColor(scaled, j, i);
+        
+        rows(i)(j) = "/image1/" + colorToString(color)
+      }
+    }
+    return rows;
+  }
+  
+  def getImageUrls4 : Array[Array[String]] = {
     val scaled = new BufferedImage(width * 2, height * 2, BufferedImage.TYPE_INT_RGB)
     val g = scaled.createGraphics;
     g.setComposite(AlphaComposite.Src)
     g.drawImage(image, 0, 0, width * 2, height * 2, null)
-    val rows = new Array[Array[Tuple4[Color, Color, Color, Color]]](height);
+    val rows = new Array[Array[String]](height);
 
     for (i <- 0 to height - 1) {
-      rows(i) = new Array[Tuple4[Color, Color, Color, Color]](width)
+      rows(i) = new Array[String](width)
       for (j <- 0 to width - 1) {
-        rows(i)(j) = (getColor(scaled, j * 2, i * 2),
+        val colors =
+        new Tuple4(getColor(scaled, j * 2, i * 2),
           getColor(scaled, j * 2 + 1, i * 2),
           getColor(scaled, j * 2, i * 2 + 1),
-          getColor(scaled, j * 2 + 1, i * 2 + 1))
+          getColor(scaled, j * 2 + 1, i * 2 + 1));
+
+        rows(i)(j) = "/image4/" + 
+          colors.productIterator.map(colorToString(_)).mkString("/") + "/"
       }
     }
-
-    <lift:children>
-      <div>Your mosaique here:{ name }is{ width }X{ height }</div>
-      <span class="table">
-        { rows.map(doLine(_)) }
-      </span>
-    </lift:children>
+    
+	return rows;  
   }
+  
+  
+  
+  def getImageUrls9 : Array[Array[String]] = {
+    val scaled = new BufferedImage(width * 3, height * 3, BufferedImage.TYPE_INT_RGB)
+    val g = scaled.createGraphics;
+    g.setComposite(AlphaComposite.Src)
+    g.drawImage(image, 0, 0, width * 3, height * 3, null)
+    val rows = new Array[Array[String]](height);
+
+    for (i <- 0 to height - 1) {
+      rows(i) = new Array[String](width)
+      for (j <- 0 to width - 1) {
+        val colors =
+        new Tuple9(getColor(scaled, j * 3, i * 3),
+        		getColor(scaled, j * 3 + 1, i * 3),
+        		getColor(scaled, j * 3 + 2, i * 3),
+        		getColor(scaled, j * 3, i * 3 + 1),
+        		getColor(scaled, j * 3 + 1, i * 3 + 1),
+        		getColor(scaled, j * 3 + 2, i * 3 + 1),
+        		getColor(scaled, j * 3, i * 3 + 2),
+        		getColor(scaled, j * 3 + 1, i * 3 + 2),
+        		getColor(scaled, j * 3 + 2, i * 3 + 2));
+
+        rows(i)(j) = "/image9/" + 
+          colors.productIterator.map(colorToString(_)).mkString("/")
+      }
+    }
+    return rows;
+  }
+  
 
   def getColor(img: BufferedImage, col: Int, row: Int): Color = {
     val color = img.getRGB(col, row);
     return new Color(color);
   }
 
-  def doLine(cols: Array[Tuple4[Color, Color, Color, Color]]): NodeSeq = {
+  def doLine(cols: Array[String]): NodeSeq = {
     <lift:children>
       <div style="height:20px">
         { cols.map(doCell(_)) }
@@ -85,11 +153,10 @@ class Mosaique extends StatefulSnippet {
     </lift:children>
   }
 
-  def doCell(colors: Tuple4[Color, Color, Color, Color]): NodeSeq = {
+  def doCell(imgUrl: String) : NodeSeq = {
     import _root_.scala.compat.Platform
 
     uniqueMarker += 1;
-    val imgUrl = "/image/" + colors.productIterator.map(c => colorToString(c)).mkString("/");
     <img src={ imgUrl + "/" + uniqueMarker }/>
   }
 
@@ -123,10 +190,10 @@ class Mosaique extends StatefulSnippet {
 object Mosaique {
   val baseURL = "http://piximilar-flickr.hackmtl.tineye.com/rest/?method=color_search"
 
-  def picture(colors: Tuple4[String, String, String, String]): Box[LiftResponse] = {
+  def picture(colors: Array[String]) : Box[LiftResponse] = {
 
     var colorWeights: Map[String, Int] = Map()
-    colors.productIterator.foreach { c =>
+    colors.foreach { c =>
       c match {
         case color: String => {
           val x = colorWeights.getOrElse(color, 0);
@@ -138,7 +205,7 @@ object Mosaique {
     var apiCall = baseURL; // + "&colors[0]=" + rgb + "&weights[0]=1";
     var idx = 0;
     colorWeights.foreach(color => {
-      apiCall += "&colors[" + idx + "]=" + color._1 + "&weights[" + idx + "]=" + (color._2 * 0.25)
+      apiCall += "&colors%5B" + idx + "%5D=" + color._1 + "&weights%5B" + idx + "%5D=" + (color._2 * 0.25)
       idx += 1;
     })
 
