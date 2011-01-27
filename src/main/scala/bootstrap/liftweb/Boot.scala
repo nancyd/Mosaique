@@ -22,8 +22,19 @@ class Boot {
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
     LiftRules.dispatch.append {
-      case Req(List("image", color1, color2, color3, color4, ignored), _, _) =>
-        () => Mosaique.picture((color1, color2, color3, color4))
+      case Req(List("image1", color1, ignored), _, _) =>
+        () => Mosaique.picture(Array(color1))
+      case Req(List("image4", color1, color2, color3, color4, ignored), _, _) =>
+        () => Mosaique.picture(Array(color1, color2, color3, color4))
+      case Req(List("image9", color1, color2, color3, color4,
+    		  color5, color6, color7, color8, color9, ignored), _, _) =>
+        () => Mosaique.picture(Array(color1, color2, color3, color4, color5, 
+        		color6, color7, color8, color9))
+    }
+    
+    ResourceServer.allow {
+    	case "jqueryui" :: _ => true
+    	case "js" :: _ => true
     }
   }
 }

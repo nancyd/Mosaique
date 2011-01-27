@@ -56,11 +56,12 @@ class Mosaique extends StatefulSnippet {
     	case "4" => getImageUrls4
     	case _ => getImageUrls1
     }
+    val lines = 0 until images.length
     <lift:children>
       <div>Your mosaique here:{ name }is{ width }X{ height }</div>
       <span class="table">
         { 
-        	images.map(doLine(_)) 
+        	lines.map(l => doLine(images(l), l)) 
         }
       </span>
     </lift:children>
@@ -77,9 +78,9 @@ class Mosaique extends StatefulSnippet {
     for (i <- 0 to height - 1) {
       rows(i) = new Array[String](width)
       for (j <- 0 to width - 1) {
-        val color = getColor(scaled, j, i);
+        val color = getColor(scaled, i, j);
         
-        rows(i)(j) = "/image1/" + colorToString(color)
+        rows(i)(j) = colorToString(color)
       }
     }
     return rows;
@@ -96,13 +97,13 @@ class Mosaique extends StatefulSnippet {
       rows(i) = new Array[String](width)
       for (j <- 0 to width - 1) {
         val colors =
-        new Tuple4(getColor(scaled, j * 2, i * 2),
-          getColor(scaled, j * 2 + 1, i * 2),
-          getColor(scaled, j * 2, i * 2 + 1),
-          getColor(scaled, j * 2 + 1, i * 2 + 1));
+        new Tuple4(getColor(scaled, i * 2, j * 2),
+          getColor(scaled, i * 2 + 1, j * 2),
+          getColor(scaled, i * 2, j * 2 + 1),
+          getColor(scaled, i * 2 + 1, j * 2 + 1));
 
-        rows(i)(j) = "/image4/" + 
-          colors.productIterator.map(colorToString(_)).mkString("/") + "/"
+        rows(i)(j) = 
+          colors.productIterator.map(colorToString(_)).mkString(":")
       }
     }
     
@@ -111,53 +112,59 @@ class Mosaique extends StatefulSnippet {
   
   
   
-  def getImageUrls9 : Array[Array[String]] = {
-    val scaled = new BufferedImage(width * 3, height * 3, BufferedImage.TYPE_INT_RGB)
-    val g = scaled.createGraphics;
-    g.setComposite(AlphaComposite.Src)
-    g.drawImage(image, 0, 0, width * 3, height * 3, null)
-    val rows = new Array[Array[String]](height);
-
-    for (i <- 0 to height - 1) {
-      rows(i) = new Array[String](width)
-      for (j <- 0 to width - 1) {
-        val colors =
-        new Tuple9(getColor(scaled, j * 3, i * 3),
-        		getColor(scaled, j * 3 + 1, i * 3),
-        		getColor(scaled, j * 3 + 2, i * 3),
-        		getColor(scaled, j * 3, i * 3 + 1),
-        		getColor(scaled, j * 3 + 1, i * 3 + 1),
-        		getColor(scaled, j * 3 + 2, i * 3 + 1),
-        		getColor(scaled, j * 3, i * 3 + 2),
-        		getColor(scaled, j * 3 + 1, i * 3 + 2),
-        		getColor(scaled, j * 3 + 2, i * 3 + 2));
-
-        rows(i)(j) = "/image9/" + 
-          colors.productIterator.map(colorToString(_)).mkString("/")
-      }
-    }
-    return rows;
-  }
+//  def getImageUrls9 : Array[Array[String]] = {
+//    val scaled = new BufferedImage(width * 3, height * 3, BufferedImage.TYPE_INT_RGB)
+//    val g = scaled.createGraphics;
+//    g.setComposite(AlphaComposite.Src)
+//    g.drawImage(image, 0, 0, width * 3, height * 3, null)
+//    val rows = new Array[Array[String]](height);
+//
+//    for (i <- 0 to height - 1) {
+//      rows(i) = new Array[String](width)
+//      for (j <- 0 to width - 1) {
+//        val colors =
+//        new Tuple9(getColor(scaled, j * 3, i * 3),
+//        		getColor(scaled, j * 3 + 1, i * 3),
+//        		getColor(scaled, j * 3 + 2, i * 3),
+//        		getColor(scaled, j * 3, i * 3 + 1),
+//        		getColor(scaled, j * 3 + 1, i * 3 + 1),
+//        		getColor(scaled, j * 3 + 2, i * 3 + 1),
+//        		getColor(scaled, j * 3, i * 3 + 2),
+//        		getColor(scaled, j * 3 + 1, i * 3 + 2),
+//        		getColor(scaled, j * 3 + 2, i * 3 + 2));
+//
+//        rows(i)(j) = "/image9/" + 
+//          colors.productIterator.map(colorToString(_)).mkString("/")
+//      }
+//    }
+//    return rows;
+//  }
   
 
-  def getColor(img: BufferedImage, col: Int, row: Int): Color = {
+  def getColor(img: BufferedImage, row: Int, col: Int): Color = {
     val color = img.getRGB(col, row);
     return new Color(color);
   }
 
-  def doLine(cols: Array[String]): NodeSeq = {
+  def doLine(cols: Array[String], row: Int): NodeSeq = {
+   	val colIndexes = 0 until cols.length
     <lift:children>
-      <div style="height:20px">
-        { cols.map(doCell(_)) }
+     <div style="height:20px">
+        { 
+        	colIndexes.map(c => doCell(cols(c), row, c)) 
+        }
       </div>
-    </lift:children>
+     </lift:children> 
   }
 
-  def doCell(imgUrl: String) : NodeSeq = {
+  def doCell(colors: String, row: Int, col:Int) : NodeSeq = {
     import _root_.scala.compat.Platform
 
     uniqueMarker += 1;
-    <img src={ imgUrl + "/" + uniqueMarker }/>
+    println(row + " " + col + " = " + colors)
+    <span id={"imgPick-" + row + "-" + col + "-" + colors}
+    	class="imagePicker" style="padding:0 ; margin: 0; spacing:0">
+    </span>
   }
 
   def colorToString(colorIHope: Any): String = {

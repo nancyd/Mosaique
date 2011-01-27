@@ -6,36 +6,62 @@
         <pathsSet class="linked-hash-set">
           <string>index.html</string>
           <string>templates-hidden/default.html</string>
-          <string>WEB-INF/web.xml</string>
+          <string>WEB-INF/appengine-web.xml</string>
           <string>WEB-INF/classes/bootstrap/liftweb/Boot$$anonfun$1.class</string>
           <string>WEB-INF/classes/bootstrap/liftweb/Boot$$anonfun$boot$1.class</string>
           <string>WEB-INF/classes/bootstrap/liftweb/Boot$$anonfun$boot$2$$anonfun$apply$1.class</string>
+          <string>WEB-INF/classes/bootstrap/liftweb/Boot$$anonfun$boot$2$$anonfun$apply$2.class</string>
+          <string>WEB-INF/classes/bootstrap/liftweb/Boot$$anonfun$boot$2$$anonfun$apply$3.class</string>
           <string>WEB-INF/classes/bootstrap/liftweb/Boot$$anonfun$boot$2.class</string>
           <string>WEB-INF/classes/bootstrap/liftweb/Boot.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/AppTest$$anonfun$wellFormed$1$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/AppTest$.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/AppTest.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/comet/.keep</string>
-          <string>WEB-INF/classes/com/nancydeschenes/model/.keep</string>
-          <string>WEB-INF/classes/com/nancydeschenes/model/MosaiqueRequest.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$dispatch$1$$anonfun$apply$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$dispatch$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$doLine$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$form$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$form$2.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$form$3.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$form$4.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$form$5.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$renderMosaique$1$$anonfun$apply$mcVI$sp$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$renderMosaique$1.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$$anonfun$renderMosaique$2.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique$.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/snippet/Mosaique.class</string>
-          <string>WEB-INF/classes/com/nancydeschenes/view/.keep</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/AppTest$$anonfun$wellFormed$1$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/AppTest$.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/AppTest.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/comet/.keep</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/model/.keep</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/model/MosaiqueRequest.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$2.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$3.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$dispatch$1$$anonfun$apply$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$dispatch$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$doLine$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$form$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$form$2.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$form$3.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$form$4.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$form$5.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$form$6.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls1$1$$anonfun$apply$mcVI$sp$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls1$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls4$1$$anonfun$apply$mcVI$sp$2$$anonfun$apply$mcVI$sp$4.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls4$1$$anonfun$apply$mcVI$sp$2.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls4$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls9$1$$anonfun$apply$mcVI$sp$3$$anonfun$apply$mcVI$sp$5.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls9$1$$anonfun$apply$mcVI$sp$3.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$getImageUrls9$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$pickOne$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$picture$1$$anonfun$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$picture$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$picture$2.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$$anonfun$renderMosaique$1.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique$.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/snippet/Mosaique.class</string>
+          <string>WEB-INF/classes/com/nancydeschenes/mosaique/view/.keep</string>
           <string>WEB-INF/classes/LiftConsole$.class</string>
           <string>WEB-INF/classes/LiftConsole.class</string>
           <string>WEB-INF/classes/RunWebApp$.class</string>
           <string>WEB-INF/classes/RunWebApp.class</string>
+          <string>WEB-INF/lib/appengine-api-1.0-sdk-1.4.0.jar</string>
+          <string>WEB-INF/lib/appengine-api-labs-1.4.0.jar</string>
+          <string>WEB-INF/lib/appengine-jsr107cache-1.4.0.jar</string>
+          <string>WEB-INF/lib/datanucleus-appengine-1.0.8.final.jar</string>
+          <string>WEB-INF/lib/datanucleus-core-1.1.5.jar</string>
+          <string>WEB-INF/lib/datanucleus-jpa-1.1.5.jar</string>
+          <string>WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar</string>
+          <string>WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar</string>
+          <string>WEB-INF/lib/jdo2-api-2.3-eb.jar</string>
+          <string>WEB-INF/lib/jsr107cache-1.1.jar</string>
+          <string>WEB-INF/web.xml</string>
           <string>WEB-INF/lib/lift-mapper-2.0-scala280-SNAPSHOT.jar</string>
           <string>WEB-INF/lib/lift-webkit-2.0-scala280-SNAPSHOT.jar</string>
           <string>WEB-INF/lib/lift-util-2.0-scala280-SNAPSHOT.jar</string>
